@@ -1,6 +1,14 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 
 # Create your views here.
+
+
 def index(request):
-    # return HttpResponse('Hello from Python!')
-    return render(request, 'index.html')
+    response = JsonResponse(
+        {
+            'version': '1',
+            'name': 'NGO-Hub-API',
+            'purpose': 'Dummy Data for Testing Mobile Application'
+        }
+    )
+    return response

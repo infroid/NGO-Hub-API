@@ -20,5 +20,6 @@ from apiv1 import views as apiv1_views
 
 urlpatterns = [
     url(r'^$', apiv1_views.index, name='index'),
-    path('admin/', admin.site.urls),
+    # url(r'^api-auth/', include('rest_framework.urls')),
+    # path('admin/', admin.site.urls),
 ]
