@@ -1,4 +1,4 @@
-# NGO-Hub-API: Getting Started
+# NGO-Hub-API: Introduction
 
 This is a simple API for NGO-Hub (https://ngo-hub.com)
 
