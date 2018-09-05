@@ -18,7 +18,7 @@ def validate_isalphaspace(value):
 
 def validate_minlength(value, min):
     """
-    Vaildates the length of the value
+    Vaildates the minimum length of the value
     """
     if len(value)<min:
         raise ValidationError(
@@ -101,7 +101,8 @@ class NGO_Verification(models.Model):
     + email verification status
     """
     # The NGO 
-    ngo = models.OneToOneField(NGO, on_delete=models.CASCADE, related_name="verification_details")
+    # Use <NGO>.verification.all() to see the NGO's verification status
+    ngo = models.OneToOneField(NGO, on_delete=models.CASCADE, related_name="verification")
     # This NGO was verified by <User>
     # Use User.verified_ngos.all() to see all NGOs they verified
     modified_by = CurrentUserField(related_name="verified_ngos")
@@ -123,14 +124,15 @@ class NGO_Verification(models.Model):
             NGO_Detail(self.ngo).save()
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
+
+
 # NGO Detail Class
 class NGO_Detail(models.Model):
     """
     The class is responsible to hold details of an NGO. 
     Class attributes to be filled by NGO (to activate donation):
-    + scale
     + orientation
-    + level
+    + level (level of operation / scale)
     + activity
     + staffing
     + funding
@@ -138,3 +140,30 @@ class NGO_Detail(models.Model):
     + overhead_cost
     + legal_status
     """
+
+    # Orientation choices
+    ORIENTATION = (
+        ('C', 'Charitable'),
+        ('S', 'Service'),
+        ('P', 'Participatory'),
+        ('E', 'Empowering'),
+    )
+
+    # Level choices
+    LEVEL = (
+        ('COM', 'Community based'),
+        ('CIT', 'City wide'),
+        ('STA', 'State NGO'),
+        ('NAT', 'National Ngo'),
+        ('INT', 'International Ngo'),
+    )
+
+    # The NGO
+    # Use <NGO>.detail.all() to see the NGO's detail
+    ngo = models.OneToOneField(NGO, on_delete=models.CASCADE, related_name="detail")
+    # Orientation of the NGO | Choice
+    # Choices: charitable, service, participatory, empowering
+    scale = models.CharField(max_length=1,choices=ORIENTATION,blank=False,null=False)
+    # Level of the NGO | Choice
+    # Choices: community-based, city-wide, state-ngo, national-ngo, international-ngo
+    scale = models.CharField(max_length=1,choices=LEVEL,blank=False,null=False)
