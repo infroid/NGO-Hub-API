@@ -135,8 +135,8 @@ class NGO_Detail(models.Model):
     + level (level of operation / scale)
     + activity
     + staffing
-    + funding
-    + funding_acceptance_from
+    + fund
+    + fund_acceptance_from
     + overhead_cost
     + legal_status
     """
@@ -158,12 +158,73 @@ class NGO_Detail(models.Model):
         ('INT', 'International Ngo'),
     )
 
+    # Activity choices
+    ACTIVITY = (
+        ('O', 'Operational'),
+        ('C', 'Campaigning'),
+        ('OC', 'Both Operational & Campaigning'),
+        ('PR', 'Public Relations'),
+        ('PM', 'Project Management'),
+    )
+
+    # Staffing choices
+    STAFFING = (
+        ('V', 'Volunteers'),
+        ('P', 'Paid Staff'),
+        ('VP', 'Both Volunteers & Paid Staff'),
+    )
+
+    # FUND choices
+    FUND = (
+        ('H', 'High (>= US $ 1 Billion)'),
+        ('M', 'Medium (>= US $ 1 Million)'),
+        ('L', 'Low (< US $ 1 Million)'),
+    )
+
+    # FUND_ACCEPTANCE_FROM choices
+    FUND_ACCEPTANCE_FROM = (
+        ('G', 'Government'),
+        ('C', 'Firms / Companies / Organizations'),
+        ('I', 'Individual'),
+        ('N', 'Other NGOs'),
+    )
+
+    # LEGAL_STATUS choices
+    LEGAL_STATUS = (
+        ('UVA', 'Unincorporated & Voluntary Association'),
+        ('TCF', 'Trust, Charities & Foundations'),
+        ('CNF', 'Companies not just for profit'),
+        ('NPL', 'Entities formed or registered under special NGO or Non Profit Laws'),
+    )
+
     # The NGO
     # Use <NGO>.detail.all() to see the NGO's detail
     ngo = models.OneToOneField(NGO, on_delete=models.CASCADE, related_name="detail")
     # Orientation of the NGO | Choice
     # Choices: charitable, service, participatory, empowering
-    scale = models.CharField(max_length=1,choices=ORIENTATION,blank=False,null=False)
+    orientation = models.CharField(max_length=1,choices=ORIENTATION,blank=False,null=False)
     # Level of the NGO | Choice
     # Choices: community-based, city-wide, state-ngo, national-ngo, international-ngo
-    scale = models.CharField(max_length=1,choices=LEVEL,blank=False,null=False)
+    level = models.CharField(max_length=3,choices=LEVEL,blank=False,null=False)
+    # Activity of the NGO | Choice
+    # Operational, Campaigning, Both Operational & Campaigning, Public Relations, Project Management
+    activity = models.CharField(max_length=2,choices=ACTIVITY,blank=False,null=False)
+    # Staffing of the NGO | Choice
+    # Volunteers, Paid Staff, Both Volunteers & Paid Staff
+    staffing = models.CharField(max_length=2,choices=STAFFING,blank=False,null=False)
+    # Fund of the NGO | Choice
+    # High (>= US $ 1 Billion), Medium (>= US $ 1 Million), Low (< US $ 1 Million)
+    fund = models.CharField(max_length=1,choices=FUND,blank=False,null=False)
+    # Fund Acceptance of the NGO | Choice
+    # Government, Firms / Companies / Organizations, Individual, Other NGOs
+    fund_acceptance_from = models.CharField(max_length=1,choices=FUND_ACCEPTANCE_FROM,blank=False,null=False)
+    # Legal Status of the NGO | Choice
+    # Unincorporated & Voluntary Association
+    # Trust, Charities & Foundations
+    # Companies not just for profit
+    # Entities formed or registered under special NGO or Non Profit Laws
+    legal_status = models.CharField(max_length=1,choices=LEGAL_STATUS,blank=False,null=False)
+    # Overhead Cost of the NGO | Choice
+    # % of funding spent on overheads
+    overhead_cost = models.PositiveSmallIntegerField(blank=False,null=False)
+    
