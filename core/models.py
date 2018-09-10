@@ -16,6 +16,16 @@ def validate_isalphaspace(value):
         )
 
 
+def validate_isnumeric(value):
+    """
+    Vaildates if the value is alphabet and space
+    """
+    if all(x.isnumeric() for x in value):
+        raise ValidationError(
+            _('%(value)s : cannot contain anything other than number'),
+            params={'value': value},
+        )
+
 def validate_minlength(value, min):
     """
     Vaildates the minimum length of the value
@@ -26,50 +36,86 @@ def validate_minlength(value, min):
             params={'value': value, 'constraint': min},
         )
 
-# NGO Class
-class NGO(models.Model):
+
+def validate_choice(selection, choice):
     """
-    The class is responsible to hold an NGO. 
-    Class attributes to be taken from NGO upon first interaction:
+    Vaildates if selection in choices
+    """
+    values = [item[0] for item in choice]
+    if selection not in values:
+        raise ValidationError(
+            _('%(selection)s : selection is not in %(values)s'),
+            params={'selection': selection, 'values': values},
+        )
+
+
+# Ngo Class
+class Ngo(models.Model):
+    """
+    The class is responsible to hold an Ngo. 
+    Class attributes to be taken from Ngo upon first interaction:
     + name
     + purpose
     + description
     + location_city
     + location_state
     + location_country
-    + mobile_p
-    + mobile_s
+    + phone_primary
+    + phone_secondary
     + email
     + website
     """
-    # Date and Time of creation of record for this NGO
+    
+    # Date and Time of creation of record for this Ngo
     created_at = models.DateTimeField(auto_now_add=True)
-    # This NGO record was created by <User>
-    # Use User.created_ngos.all() to see all NGOs they created
-    created_by = CurrentUserField(add_only=True, related_name="created_ngos")
-    # This NGO record was modified by <User>
-    # Use User.modified_ngos.all() to see all NGOs they modified
-    modified_by = CurrentUserField(related_name="modified_ngos")
-    # Name of the NGO | 2,000 characters max | 2 characters min
-    name = models.TextField(max_length=2000,blank=False,null=False)
-    # Purpose of the NGO | 5,000 characters max | 50 characters min
-    purpose = models.TextField(max_length=5000,blank=False,null=False)
-    # Description of the NGO | 10,000 characters max | 300 characters min
-    description = models.TextField(max_length=10000,blank=False,null=False)
-    # Location of the NGO | 255 characters max | City
-    location_city = models.CharField(max_length=255)
-    # Location of the NGO | 255 characters max | State
-    location_state = models.CharField(max_length=255)
-    # Location of the NGO | 255 characters max | Country
-    location_country = models.CharField(max_length=255)
-    # Phone Number of the NGO | 50 characters max | Primary Phone Number
-    phone_p = models.CharField(max_length=50)
-    # Phone Number of the NGO | 50 characters max | Secondary Phone Number
-    phone_s = models.CharField(max_length=50)
-    # Email of the NGO | 254 characters max (RFC 2821)
-    email = models.EmailField(max_length=254)
-    # Website of the NGO | 200 characters max
-    website = models.URLField(max_length=200)
+    
+    # This Ngo record was created by <User>
+    # Use User.created_Ngos.all() to see all Ngos they created
+    created_by = CurrentUserField(add_only=True, related_name="CreatedNgo",blank=False,null=False,on_delete=models.DO_NOTHING)
+    
+    # This Ngo record was modified by <User>
+    # Use User.modified_Ngos.all() to see all Ngos they modified
+    modified_by = CurrentUserField(related_name="ModifiedNgo",blank=False,null=False,on_delete=models.DO_NOTHING)
+    
+    name = models.TextField(
+        help_text='Name of the Ngo | 2,000 characters max | 2 characters min',
+        max_length=2000,blank=False,null=False)
+        
+    purpose = models.TextField(
+        help_text='Purpose of the Ngo | 5,000 characters max | 50 characters min',
+        max_length=5000,blank=False,null=False)
+        
+    description = models.TextField(
+        help_text='Description of the Ngo | 10,000 characters max | 300 characters min',
+        max_length=10000,blank=False,null=False)
+        
+    location_city = models.CharField(
+        help_text='Location of the Ngo | 255 characters max | City',
+        max_length=255,blank=False,null=False)
+        
+    location_state = models.CharField(
+        help_text='Location of the Ngo | 255 characters max | State',
+        max_length=255,blank=False,null=False)
+        
+    location_country = models.CharField(
+        help_text='Location of the Ngo | 255 characters max | Country',
+        max_length=255,blank=False,null=False)
+
+    phone_primary = models.CharField(
+        help_text='Phone Number of the Ngo | 50 characters max | Primary Phone Number',
+        max_length=50,blank=False,null=False)
+
+    phone_secondary = models.CharField(
+        help_text='Phone Number of the Ngo | 50 characters max | Secondary Phone Number',
+        max_length=50,blank=False,null=False)
+
+    email = models.EmailField(
+        help_text='Email of the Ngo | 254 characters max (RFC 2821)',
+        max_length=254,blank=False,null=False)
+
+    website = models.URLField(
+        help_text='Website of the Ngo | 200 characters max',
+        max_length=200,blank=False,null=False)
 
 
     def save(self, *args, **kwargs):
@@ -85,31 +131,34 @@ class NGO(models.Model):
         validate_isalphaspace(self.name)
         validate_isalphaspace(self.location_city)
         validate_isalphaspace(self.location_state)
-        validate_isalphaspace(self.location_country)  
-        # Initiate NGO Verification
-        NGO_Verification(self).save()
+        validate_isalphaspace(self.location_country)
+        validate_isnumeric(self.phone_p)
+        validate_isnumeric(self.phone_s)
+        # Initiate Ngo Verification
+        Ngo_Verification(Ngo=self).save()
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
-# NGO Verification Class
-class NGO_Verification(models.Model):
+# Ngo Verification Class
+class Ngo_Verification(models.Model):
     """
-    The class is responsible to perform NGO Verification. 
+    The class is responsible to perform Ngo Verification. 
     Class attributes to be updated upon second interaction:
     + primary phone number verification status
     + secondary phone number verification status
     + email verification status
+    + website verification status
     """
-    # The NGO 
-    # Use <NGO>.verification.all() to see the NGO's verification status
-    ngo = models.OneToOneField(NGO, on_delete=models.CASCADE, related_name="verification")
-    # This NGO was verified by <User>
-    # Use User.verified_ngos.all() to see all NGOs they verified
-    modified_by = CurrentUserField(related_name="verified_ngos")
+    # The Ngo 
+    # Use <Ngo>.verification.all() to see the Ngo's verification status
+    ngo = models.OneToOneField(Ngo, on_delete=models.CASCADE, related_name="Verification",blank=False,null=False)
+    # This Ngo was verified by <User>
+    # Use User.verified_Ngos.all() to see all Ngos they verified
+    modified_by = CurrentUserField(related_name="VerifiedNgo",blank=False,null=False,on_delete=models.DO_NOTHING)
     # Verification Status of Primary Phone Number
-    v_mobile_p = models.BooleanField(default=False)
+    verified_phone_primary = models.BooleanField(default=False)
     # Verification Status of Secondary Phone Number
-    v_mobile_s = models.BooleanField(default=False)
+    verified_phone_secondary = models.BooleanField(default=False)
     # Verification Status of Email
     v_email = models.BooleanField(default=False)
     # Verification Status of Website
@@ -120,25 +169,26 @@ class NGO_Verification(models.Model):
         """
         Overrides save method to check if verification finished.
         """
-        if self.v_mobile_p and self.v_mobile_s and self.v_email and self.v_website:
-            NGO_Detail(self.ngo).save()
+        if self.verified_phone_primary and self.verified_phone_secondary and self.v_email and self.v_website:
+            Ngo_Detail(Ngo=self.Ngo).save()
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 
-# NGO Detail Class
-class NGO_Detail(models.Model):
+# Ngo Detail Class
+class Ngo_Detail(models.Model):
     """
-    The class is responsible to hold details of an NGO. 
-    Class attributes to be filled by NGO (to activate donation):
+    The class is responsible to hold details of an Ngo.
+    These details could only be changed by the Ngo's manager. 
+    Class attributes to be filled by Ngo (to activate donation):
     + orientation
     + level (level of operation / scale)
     + activity
     + staffing
     + fund
     + fund_acceptance_from
-    + overhead_cost
     + legal_status
+    + overhead_cost
     """
 
     # Orientation choices
@@ -153,7 +203,7 @@ class NGO_Detail(models.Model):
     LEVEL = (
         ('COM', 'Community based'),
         ('CIT', 'City wide'),
-        ('STA', 'State NGO'),
+        ('STA', 'State Ngo'),
         ('NAT', 'National Ngo'),
         ('INT', 'International Ngo'),
     )
@@ -186,7 +236,7 @@ class NGO_Detail(models.Model):
         ('G', 'Government'),
         ('C', 'Firms / Companies / Organizations'),
         ('I', 'Individual'),
-        ('N', 'Other NGOs'),
+        ('N', 'Other Ngos'),
     )
 
     # LEGAL_STATUS choices
@@ -194,37 +244,57 @@ class NGO_Detail(models.Model):
         ('UVA', 'Unincorporated & Voluntary Association'),
         ('TCF', 'Trust, Charities & Foundations'),
         ('CNF', 'Companies not just for profit'),
-        ('NPL', 'Entities formed or registered under special NGO or Non Profit Laws'),
+        ('NPL', 'Entities formed or registered under special Ngo or Non Profit Laws'),
     )
 
-    # The NGO
-    # Use <NGO>.detail.all() to see the NGO's detail
-    ngo = models.OneToOneField(NGO, on_delete=models.CASCADE, related_name="detail")
-    # Orientation of the NGO | Choice
+    # The Ngo
+    # Use <Ngo>.detail.all() to see the Ngo's detail
+    ngo = models.OneToOneField(Ngo, on_delete=models.CASCADE, related_name="detail")
+    # Orientation of the Ngo | Choice
     # Choices: charitable, service, participatory, empowering
-    orientation = models.CharField(max_length=1,choices=ORIENTATION,blank=False,null=False)
-    # Level of the NGO | Choice
-    # Choices: community-based, city-wide, state-ngo, national-ngo, international-ngo
-    level = models.CharField(max_length=3,choices=LEVEL,blank=False,null=False)
-    # Activity of the NGO | Choice
+    orientation = models.CharField(max_length=1,choices=ORIENTATION)
+    # Level of the Ngo | Choice
+    # Choices: community-based, city-wide, state-Ngo, national-Ngo, international-Ngo
+    level = models.CharField(max_length=3,choices=LEVEL)
+    # Activity of the Ngo | Choice
     # Operational, Campaigning, Both Operational & Campaigning, Public Relations, Project Management
-    activity = models.CharField(max_length=2,choices=ACTIVITY,blank=False,null=False)
-    # Staffing of the NGO | Choice
+    activity = models.CharField(max_length=2,choices=ACTIVITY)
+    # Staffing of the Ngo | Choice
     # Volunteers, Paid Staff, Both Volunteers & Paid Staff
-    staffing = models.CharField(max_length=2,choices=STAFFING,blank=False,null=False)
-    # Fund of the NGO | Choice
+    staffing = models.CharField(max_length=2,choices=STAFFING)
+    # Fund of the Ngo | Choice
     # High (>= US $ 1 Billion), Medium (>= US $ 1 Million), Low (< US $ 1 Million)
-    fund = models.CharField(max_length=1,choices=FUND,blank=False,null=False)
-    # Fund Acceptance of the NGO | Choice
-    # Government, Firms / Companies / Organizations, Individual, Other NGOs
-    fund_acceptance_from = models.CharField(max_length=1,choices=FUND_ACCEPTANCE_FROM,blank=False,null=False)
-    # Legal Status of the NGO | Choice
+    fund = models.CharField(max_length=1,choices=FUND)
+    # Fund Acceptance of the Ngo | Choice
+    # Government, Firms / Companies / Organizations, Individual, Other Ngos
+    fund_acceptance_from = models.CharField(max_length=1,choices=FUND_ACCEPTANCE_FROM)
+    # Legal Status of the Ngo | Choice
     # Unincorporated & Voluntary Association
     # Trust, Charities & Foundations
     # Companies not just for profit
-    # Entities formed or registered under special NGO or Non Profit Laws
-    legal_status = models.CharField(max_length=1,choices=LEGAL_STATUS,blank=False,null=False)
-    # Overhead Cost of the NGO | Choice
+    # Entities formed or registered under special Ngo or Non Profit Laws
+    legal_status = models.CharField(max_length=3,choices=LEGAL_STATUS)
+    # Overhead Cost of the Ngo | Choice
     # % of funding spent on overheads
-    overhead_cost = models.PositiveSmallIntegerField(blank=False,null=False)
-    
+    overhead_cost = models.PositiveSmallIntegerField()
+
+
+    def save(self, *args, **kwargs):
+        """
+        Overrides save method to check if verification finished.
+        """
+        if self.orientation:
+            validate_choice(self.orientation, self.ORIENTATION)
+        if self.level:
+            validate_choice(self.level, self.LEVEL)
+        if self.activity:
+            validate_choice(self.activity, self.ACTIVITY)
+        if self.staffing:
+            validate_choice(self.staffing, self.STAFFING)
+        if self.fund:
+            validate_choice(self.fund, self.FUND)
+        if self.fund_acceptance_from:
+            validate_choice(self.fund_acceptance_from, self.FUND_ACCEPTANCE_FROM)
+        if self.legal_status:
+            validate_choice(self.legal_status, self.LEGAL_STATUS)
+        super().save(*args, **kwargs)  # Call the "real" save() method.

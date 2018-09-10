@@ -16,10 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include, url
-from apiv1 import views as apiv1_views
 
 urlpatterns = [
-    url(r'^$', apiv1_views.index, name='index'),
-    # url(r'^api-auth/', include('rest_framework.urls')),
-    # path('admin/', admin.site.urls),
+    url(r'^core/', include('core.urls')),
+    url(r'^api-auth/', include('rest_framework.urls')),
+    path('admin/', admin.site.urls),
 ]

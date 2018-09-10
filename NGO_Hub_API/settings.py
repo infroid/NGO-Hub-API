@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cuser',
     'rest_framework',
-    'apiv1',
+    'users',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -124,4 +125,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# Heroku Settings
 django_heroku.settings(locals())
+
+
+# Django Rest Framework
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+    ]
+}
+
+# Using a custom user model called CustomUser rather than the default User model
+AUTH_USER_MODEL = 'users.CustomUser'
