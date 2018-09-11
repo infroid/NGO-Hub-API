@@ -12,5 +12,6 @@ This is a simple API for NGO-Hub (https://ngo-hub.com)
 
 ## Parallel Repositories
 
++ NGO-Hub-landing-page (https://github.com/infroid/NGO-Hub-landing-page)
 + NGO-Hub-App-Android (https://github.com/infroid/NGO-Hub-App-Android)
 + NGO-Hub-App-iOS (https://github.com/infroid/NGO-Hub-App-iOS)
