@@ -299,5 +299,3 @@ class Ngo_Detail(models.Model):
             validate_choice(self.legal_status, self.LEGAL_STATUS)
         super().save(*args, **kwargs)  # Call the "real" save() method.
     overhead_cost = models.PositiveSmallIntegerField(blank=False,null=False)
-
-# Testing Change
