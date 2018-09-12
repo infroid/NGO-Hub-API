@@ -276,7 +276,6 @@ class Ngo_Detail(models.Model):
     legal_status = models.CharField(max_length=3,choices=LEGAL_STATUS)
     # Overhead Cost of the Ngo | Choice
     # % of funding spent on overheads
-<<<<<<< HEAD
     overhead_cost = models.PositiveSmallIntegerField()
 
 
@@ -299,8 +298,6 @@ class Ngo_Detail(models.Model):
         if self.legal_status:
             validate_choice(self.legal_status, self.LEGAL_STATUS)
         super().save(*args, **kwargs)  # Call the "real" save() method.
-=======
     overhead_cost = models.PositiveSmallIntegerField(blank=False,null=False)
 
 # Testing Change
->>>>>>> 1cc2fe9d6600615c56fe3243f8d6a26d81687371
