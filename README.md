@@ -8,7 +8,6 @@ This is a simple API for NGO-Hub (https://ngo-hub.com)
 
 + Integration with Web App
 + Integration with Android App
-+ Integration with iOS App
 
 ## Suggestions (Please)
 + Reach via Issues (GitHub)
